@@ -296,8 +296,10 @@ epoll_add(void *arg, struct event *ev)
 
 	epev.data.fd = fd;
 	epev.events = events;
-	if (epoll_ctl(epollop->epfd, op, ev->ev_fd, &epev) == -1)
+	if (epoll_ctl(epollop->epfd, op, ev->ev_fd, &epev) == -1) {
+		if (epoll_ctl(epollop->epfd, EPOLL_CTL_ADD, ev->ev_fd, &epev) == -1)
 			return (-1);
+	}
 
 	/* Update events responsible */
 	if (ev->ev_events & EV_READ)
